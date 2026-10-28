@@ -1,0 +1,14 @@
+{
+  "mcp": {
+    "servers": {
+      "exa": {
+        "type": "http",
+        "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa",
+        "timeoutMs": 60000,
+        "headers": {
+          "x-api-key": "YOUR_EXA_API_KEY"
+        }
+      }
+    }
+  }
+}
