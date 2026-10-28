@@ -31,7 +31,7 @@ This strategy addresses all four with **judgment rules + a tiered workflow + hum
 |---|---|---|---|
 | ① Coarse search | Exa `web_search_exa` | Leads + snippets | Snippets are insufficient |
 | ② Full text | Exa `web_fetch_exa` | Body text (numbers, document IDs, dates) | Fetch fails (JS-rendered / anti-bot / login wall) |
-| ③ Browser fallback | Playwright / Chrome | Post-interaction page content | — |
+| ③ Browser fallback | ③a `ego-browser`: needs login state / known site<br>③b `playwright-cli`: untrusted source / needs isolation | Rendered page content | — |
 | ④ Site-specific channel | `gh` CLI / `curl` / dedicated APIs | Code, structured data | — |
 
 **Principle: use the lightest tool that works.** You do not run all four tiers for every task — a single-fact lookup should stop at tier ①.
@@ -55,6 +55,24 @@ This strategy addresses all four with **judgment rules + a tiered workflow + hum
 - Labeled 「confirmed / unconfirmed / freshness unknown」(已证实 / 未证实 / 时效未知)
 - Conflicting sources are flagged, not silently reconciled
 - The user's explicit format requirements in the current message override default presentation preferences (conflict adjudication)
+
+### 5. Why the browser fallback is split into two tools
+
+The test is one question: **is this page worth opening with your real identity?**
+
+|  | ③a `ego-browser` | ③b `playwright-cli` |
+|---|---|---|
+| What it is | The Chromium browser you use day to day; the agent attaches to the same instance | Playwright driven from the command line |
+| Default profile | Yours — cookies and login state already there | In memory, wiped when the browser closes |
+| Default visibility | A real window you can watch and take over | Headless, no trace left by default |
+| Use it when | Known sites, pages behind a login, or cases where you must clear a captcha or scan a QR code yourself | Unknown links, short links, pages used once |
+| Avoid it when | Opening an untrusted page — it runs under your real accounts | Pages that need login — you would re-authenticate every time |
+
+They are not merged because their defaults point in opposite directions: ego defaults to "carry your identity", playwright-cli defaults to "carry none". One tool doing both would have to give ground on one side — either re-login inside a throwaway container, or open untrusted pages in your real session.
+
+One more reason that is easy to miss: **tier ③ is the only channel that can borrow your own network position.** Search and fetch APIs such as Exa run on their own servers; your proxy, intranet or corporate VPN has no effect on what they can reach. ego and playwright-cli run locally, so they can open exactly what you can open. This tier is therefore not only an anti-bot fallback but also a "reach the page from my network" fallback.
+
+**Why CLI rather than Playwright MCP**: MCP tool schemas sit in context every turn, while the browser fallback is a low-frequency operation; a CLI costs nothing until it is actually invoked, and is headless and trace-free by default. The MCP version also works if that is what you have — same capabilities, minus the constant schema overhead.
 
 ---
 
@@ -189,6 +207,7 @@ Rule file: `AGENTS.md` for ZCode, `CLAUDE.md` for Claude Code (same content, ren
 - **Tools don't appear?** Start a new session (MCP servers and skills load at session start). In ZCode, check Settings → MCP.
 - **Cannot connect from mainland China?** `mcp.exa.ai` is unstable without a proxy; set `HTTPS_PROXY` in your terminal.
 - **Want another search provider?** Tavily / Firecrawl / Brave all have MCP servers; replace tier ① and update the tool names in the skill. The rules stay unchanged.
+- **Do I need both browser tools?** No. Either one alone can serve tier ③: with `ego-browser` you always use your real identity, with `playwright-cli` you always run in a disposable container. Splitting them just keeps the choice of "should this page run as me" available.
 - **`date` shows the wrong day?** Container / sandbox clocks may be skewed; use the date injected by the session.
 
 ---

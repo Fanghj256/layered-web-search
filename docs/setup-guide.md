@@ -12,7 +12,7 @@ Takes about 10 minutes; no accounts are required except the optional Exa signup.
 | Agent client | ZCode 3.x (verified); Claude Code / Cursor etc. — see §8 |
 | Network | Reachable `mcp.exa.ai` (a proxy is required from mainland China) |
 | Exa account | Optional. Anonymous mode works but is rate-limited; a free account gives steadier quota |
-| Node.js | Only needed if you use a Playwright-based browser fallback or `mcp-remote` |
+| Node.js | Only needed if you use the browser fallback (`playwright-cli`) or `mcp-remote` |
 
 ---
 
@@ -48,7 +48,7 @@ Takes about 10 minutes; no accounts are required except the optional Exa signup.
 
 ### 2.2 Write the config
 
-Open `~/.zcode/cli/config.json` and add `exa` under `mcp.servers` (alongside entries such as `playwright`):
+Open `~/.zcode/cli/config.json` and add `exa` under `mcp.servers` (alongside any other entries you already have):
 
 ```json
 {
@@ -122,7 +122,23 @@ cp skills/web-research/SKILL.md ~/.zcode/skills/web-research/
 
 - Skills are discovered **at session start** — start a new session after installing.
 - When the same skill name exists in several places, the user scope wins (workspace copies are shadowed).
-- The browser tools named in step 5 of the skill (`ego-browser` / `playwright-cli`) are local examples — substitute whatever browser tooling you have (e.g. Playwright MCP). The workflow logic is unchanged.
+
+### 4.1 Browser fallback tools (optional)
+
+Step 5 of the skill splits the browser fallback into two tools. The test is "is this page worth opening with your real identity?". You can run the first two tiers without either of them; only tier ③ needs one.
+
+```bash
+# ③a Sites that need login state: ego lite
+# Download from https://lite.ego.app/ and finish onboarding on first launch
+# (it registers the ego-browser command)
+
+# ③b Untrusted sites that need isolation: playwright-cli
+npm install -g @playwright/cli@latest
+playwright-cli install --skills
+```
+
+- If `playwright-cli install --skills` only writes to `.claude/skills/`, copy the whole `playwright-cli` directory from there into `~/.zcode/skills/` so ZCode picks it up.
+- See "Why the browser fallback is split into two tools" in the README for the division of labour and the reasoning. Playwright MCP can substitute if that is what you have; the workflow logic is unchanged.
 
 ---
 
