@@ -115,6 +115,8 @@ User question
    cp skills/web-research/SKILL.md ~/.zcode/skills/web-research/
    ```
 
+   The English reference is at `skills/web-research/SKILL.en.md`; it is not needed for the default install. To use English instructions, copy it as `SKILL.md`.
+
 3. **Configure the Exa MCP** (ZCode example)
 
    Edit `~/.zcode/cli/config.json` and add under `mcp.servers`:
@@ -142,7 +144,9 @@ Full steps (including three pitfalls, a verification checklist, troubleshooting,
 ├── LICENSE                        # MIT
 ├── AGENTS.md                      # Standing judgment rules (install to ~/.zcode/AGENTS.md)
 ├── skills/
-│   └── web-research/SKILL.md      # On-demand full research workflow
+│   └── web-research/
+│       ├── SKILL.md               # On-demand full research workflow (Chinese, loaded by default)
+│       └── SKILL.en.md            # English reference
 ├── examples/
 │   ├── config/zcode-mcp.json      # Exa MCP config example (placeholder key)
 │   ├── commands/research.md       # Optional: /research manual force command

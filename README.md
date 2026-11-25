@@ -115,6 +115,8 @@
    cp skills/web-research/SKILL.md ~/.zcode/skills/web-research/
    ```
 
+   英文参考版是 `skills/web-research/SKILL.en.md`，默认安装不需要它；想用英文说明，就把它复制成 `SKILL.md`。
+
 3. **配置 Exa MCP**（ZCode 示例）
 
    编辑 `~/.zcode/cli/config.json`，在 `mcp.servers` 下加入：
@@ -142,7 +144,9 @@
 ├── LICENSE                        # MIT
 ├── AGENTS.md                      # 常驻判断规则（装到 ~/.zcode/AGENTS.md）
 ├── skills/
-│   └── web-research/SKILL.md      # 按需加载的完整调研流程
+│   └── web-research/
+│       ├── SKILL.md               # 按需加载的完整调研流程（中文，实际加载）
+│       └── SKILL.en.md            # 英文参考版
 ├── examples/
 │   ├── config/zcode-mcp.json      # Exa MCP 配置示例（占位 key）
 │   ├── commands/research.md       # 可选：/research 手动强制命令
